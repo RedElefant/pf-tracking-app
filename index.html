@@ -1,224 +1,250 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Workout Tracker</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PF Total Body Circuit</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      margin: 10px;
       background-color: #f9f9f9;
+      margin: 0;
+      padding: 0;
     }
-
     h2 {
       text-align: center;
-      margin-top: 20px;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      table-layout: fixed;
-      font-size: 14px;
-      margin-bottom: 20px;
-      background: white;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-      border-radius: 6px;
-      overflow: hidden;
-    }
-
-    th, td {
-      border: 1px solid #ccc;
-      padding: 6px;
-      text-align: center;
-      word-wrap: break-word;
-    }
-
-    th {
-      background-color: #d7bde2;
+      margin-top: 1rem;
       color: #333;
     }
-
+    .button-container {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin: 15px 0;
+    }
     button {
-      display: block;
-      margin: 15px auto;
-      padding: 10px 16px;
       background-color: #d7bde2;
-      color: #333;
       border: none;
-      border-radius: 6px;
+      border-radius: 8px;
+      padding: 10px 16px;
       font-size: 14px;
+      color: #333;
+      font-weight: bold;
       cursor: pointer;
     }
-
     button:hover {
       background-color: #c39bd3;
     }
-
-    .history {
-      margin-top: 20px;
+    table {
+      width: 95%;
+      margin: 0 auto 20px auto;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    th {
+      background-color: #d7bde2;
+      color: #333;
+      padding: 8px;
+      text-align: center;
+    }
+    td {
+      padding: 6px;
+      text-align: center;
+      border-bottom: 1px solid #ddd;
+    }
+    select {
+      padding: 4px;
+      font-size: 14px;
+    }
+    .history, .summary {
       display: none;
+      margin: 20px;
     }
-
-    /* Responsive tweaks */
-    @media (max-width: 600px) {
-      table { font-size: 12px; }
-      th, td { padding: 4px; }
-      th span.long-label { display: none; }
-      th span.short-label { display: inline; }
-    }
-
-    @media (min-width: 601px) {
-      th span.short-label { display: none; }
-      th span.long-label { display: inline; }
+    .history h3, .summary h3 {
+      text-align: center;
     }
   </style>
 </head>
 <body>
-  <h2>Day 1</h2>
-  <table id="day1"></table>
 
-  <h2>Day 2</h2>
-  <table id="day2"></table>
+  <h2>PF Total Body Circuit</h2>
 
-  <h2>Day 3</h2>
-  <table id="day3"></table>
+  <div class="button-container">
+    <button onclick="toggleView('history')">View History</button>
+    <button onclick="toggleView('summary')">Weekly Summary</button>
+  </div>
 
-  <button onclick="toggleHistory()">View History</button>
-
-  <div class="history" id="history">
-    <h2>Workout History</h2>
+  <div id="tables"></div>
+  <div class="history" id="historyView">
+    <h3>Workout History</h3>
     <div id="historyContent"></div>
+  </div>
+  <div class="summary" id="summaryView">
+    <h3>Weekly Summary</h3>
+    <div id="summaryContent"></div>
   </div>
 
   <script>
-    const workouts = {
-      day1: [
-        "Chest Press Machine", "Lat Pulldown Machine", "Shoulder Press Machine",
-        "Torso Rotation Machine (per side)", "Abdominal Crunch Machine",
-        "Leg Press Machine", "Leg Curl Machine", "Lunge Machine"
+    const exercises = {
+      "Day 1": [
+        "Chest Press Machine",
+        "Back Extension Machine",
+        "Lat Pulldown Machine",
+        "Seated Row Machine",
+        "Abdominal Crunch Machine",
+        "Torso Rotation Machine (per side)",
+        "Pec Deck (Butterfly) Machine"
       ],
-      day2: [
-        "Incline Chest Press Machine", "Seated Row Machine", "Pec Deck Fly Machine",
-        "Back Extension Machine", "Hip Abduction Machine", "Hip Adduction Machine",
-        "Calf Raise Machine", "Glute Kickback Machine"
+      "Day 2": [
+        "Leg Press Machine",
+        "Seated Leg Curl Machine",
+        "Leg Extension Machine",
+        "Calf Extension Machine",
+        "Abdominal Crunch Machine",
+        "Hip Abduction Machine",
+        "Hip Adduction Machine",
+        "Lunge Machine"
       ],
-      day3: [
-        "Shoulder Press Machine", "Torso Rotation Machine (per side)", "Abdominal Crunch Machine",
-        "Bicep Curl Machine", "Tricep Extension Machine", "Seated Dip Machine",
-        "Rear Delt Fly (Reverse Pec Deck)", "Dumbbell Lateral Raise"
+      "Day 3": [
+        "Shoulder Press Machine",
+        "Torso Rotation Machine (per side)",
+        "Abdominal Crunch Machine",
+        "Bicep Curl Machine",
+        "Tricep Extension Machine",
+        "Seated Dip Machine",
+        "Rear Delt Fly (Reverse Pec Deck)",
+        "Dumbbell Lateral Raise"
       ]
     };
 
-    const setsOptions = [2, 3, 4];
-    const repsOptions = Array.from({length: 7}, (_, i) => 8 + i * 2); // 8 to 20 step 2
-    const weightOptions = Array.from({length: 11}, (_, i) => 20 + i * 10); // 20 to 120
-
-    const dbKey = "workoutHistory";
-
-    function createDropdown(options, id, savedValue, defaultValue) {
-      const select = document.createElement("select");
-      select.id = id;
-      options.forEach(opt => {
-        const option = document.createElement("option");
-        option.value = opt;
-        option.textContent = opt;
-        if (savedValue == opt) option.selected = true;
-        select.appendChild(option);
-      });
-      if (!savedValue) select.value = defaultValue;
-      return select;
-    }
+    const repOptions = Array.from({length: 7}, (_,i) => 8 + i*2); // 8–20
+    const weightOptions = Array.from({length: 11}, (_,i) => 20 + i*10); // 20–120
+    let history = JSON.parse(localStorage.getItem('workoutHistory')) || [];
+    let lastSelections = JSON.parse(localStorage.getItem('lastSelections')) || {};
 
     function renderTables() {
-      Object.keys(workouts).forEach(day => {
-        const table = document.getElementById(day);
-        table.innerHTML = `
-          <tr>
-            <th><span class="long-label">Exercise</span><span class="short-label">Ex</span></th>
-            <th><span class="long-label">Sets</span><span class="short-label">S</span></th>
-            <th><span class="long-label">Reps</span><span class="short-label">R</span></th>
-            <th><span class="long-label">Weight</span><span class="short-label">Wt</span></th>
-            <th><span class="long-label">Done</span><span class="short-label">✓</span></th>
-          </tr>
-        `;
+      const container = document.getElementById("tables");
+      container.innerHTML = "";
 
-        workouts[day].forEach(exercise => {
-          const row = document.createElement("tr");
+      Object.keys(exercises).forEach(day => {
+        const table = document.createElement("table");
+        const caption = document.createElement("caption");
+        caption.innerHTML = `<h3>${day}</h3>`;
+        table.appendChild(caption);
 
-          const exerciseCell = document.createElement("td");
-          exerciseCell.textContent = exercise;
-          row.appendChild(exerciseCell);
-
-          const setsCell = document.createElement("td");
-          setsCell.appendChild(createDropdown(setsOptions, `${day}_${exercise}_sets`, loadLast(day, exercise, "sets"), setsOptions[0]));
-          row.appendChild(setsCell);
-
-          const repsCell = document.createElement("td");
-          repsCell.appendChild(createDropdown(repsOptions, `${day}_${exercise}_reps`, loadLast(day, exercise, "reps"), repsOptions[0]));
-          row.appendChild(repsCell);
-
-          const weightCell = document.createElement("td");
-          weightCell.appendChild(createDropdown(weightOptions, `${day}_${exercise}_weight`, loadLast(day, exercise, "weight"), weightOptions[0]));
-          row.appendChild(weightCell);
-
-          const doneCell = document.createElement("td");
-          const checkbox = document.createElement("input");
-          checkbox.type = "checkbox";
-          checkbox.id = `${day}_${exercise}_done`;
-          doneCell.appendChild(checkbox);
-          row.appendChild(doneCell);
-
-          table.appendChild(row);
+        const header = document.createElement("tr");
+        ["Exercise","Sets","Reps","Weight","Done"].forEach(h => {
+          const th = document.createElement("th");
+          th.textContent = h;
+          header.appendChild(th);
         });
+        table.appendChild(header);
+
+        exercises[day].forEach(ex => {
+          const tr = document.createElement("tr");
+
+          const tdEx = document.createElement("td");
+          tdEx.textContent = ex;
+          tr.appendChild(tdEx);
+
+          const tdSets = document.createElement("td");
+          tdSets.textContent = "3";
+          tr.appendChild(tdSets);
+
+          const tdReps = document.createElement("td");
+          const repSelect = document.createElement("select");
+          repOptions.forEach(val => {
+            const opt = document.createElement("option");
+            opt.value = val;
+            opt.textContent = val;
+            repSelect.appendChild(opt);
+          });
+          repSelect.value = lastSelections[ex]?.reps || repOptions[0];
+          tdReps.appendChild(repSelect);
+          tr.appendChild(tdReps);
+
+          const tdWeight = document.createElement("td");
+          const weightSelect = document.createElement("select");
+          weightOptions.forEach(val => {
+            const opt = document.createElement("option");
+            opt.value = val;
+            opt.textContent = val;
+            weightSelect.appendChild(opt);
+          });
+          weightSelect.value = lastSelections[ex]?.weight || weightOptions[0];
+          tdWeight.appendChild(weightSelect);
+          tr.appendChild(tdWeight);
+
+          const tdDone = document.createElement("td");
+          const chk = document.createElement("input");
+          chk.type = "checkbox";
+          chk.onchange = () => {
+            if (chk.checked) {
+              const entry = {
+                date: new Date().toLocaleDateString(),
+                day,
+                exercise: ex,
+                sets: 3,
+                reps: repSelect.value,
+                weight: weightSelect.value
+              };
+              history.push(entry);
+              localStorage.setItem('workoutHistory', JSON.stringify(history));
+              lastSelections[ex] = { reps: repSelect.value, weight: weightSelect.value };
+              localStorage.setItem('lastSelections', JSON.stringify(lastSelections));
+            }
+          };
+          tdDone.appendChild(chk);
+          tr.appendChild(tdDone);
+
+          table.appendChild(tr);
+        });
+        container.appendChild(table);
       });
     }
 
-    function loadLast(day, exercise, field) {
-      const history = JSON.parse(localStorage.getItem(dbKey)) || [];
-      for (let i = history.length - 1; i >= 0; i--) {
-        const e = history[i];
-        if (e.day === day && e.exercise === exercise && e[field]) {
-          return e[field];
-        }
-      }
-      return null;
-    }
+    function toggleView(view) {
+      document.getElementById("historyView").style.display = "none";
+      document.getElementById("summaryView").style.display = "none";
+      document.getElementById("tables").style.display = "none";
 
-    function saveProgress() {
-      const history = JSON.parse(localStorage.getItem(dbKey)) || [];
-      Object.keys(workouts).forEach(day => {
-        workouts[day].forEach(exercise => {
-          const done = document.getElementById(`${day}_${exercise}_done`).checked;
-          if (done) {
-            history.push({
-              day,
-              exercise,
-              sets: document.getElementById(`${day}_${exercise}_sets`).value,
-              reps: document.getElementById(`${day}_${exercise}_reps`).value,
-              weight: document.getElementById(`${day}_${exercise}_weight`).value,
-              date: new Date().toLocaleDateString()
-            });
-          }
-        });
-      });
-      localStorage.setItem(dbKey, JSON.stringify(history));
-    }
-
-    function toggleHistory() {
-      const historyDiv = document.getElementById("history");
-      const contentDiv = document.getElementById("historyContent");
-      if (historyDiv.style.display === "none" || historyDiv.style.display === "") {
-        saveProgress();
-        const history = JSON.parse(localStorage.getItem(dbKey)) || [];
-        contentDiv.innerHTML = history.map(h =>
-          `<div>${h.date} - ${h.day} - ${h.exercise}: ${h.sets}x${h.reps} @ ${h.weight} lbs</div>`
-        ).join("");
-        historyDiv.style.display = "block";
+      if (view === "history") {
+        document.getElementById("historyView").style.display = "block";
+        renderHistory();
+      } else if (view === "summary") {
+        document.getElementById("summaryView").style.display = "block";
+        renderSummary();
       } else {
-        historyDiv.style.display = "none";
+        document.getElementById("tables").style.display = "block";
       }
+    }
+
+    function renderHistory() {
+      const content = document.getElementById("historyContent");
+      content.innerHTML = "";
+      history.forEach(entry => {
+        const div = document.createElement("div");
+        div.textContent = `${entry.date} - ${entry.day} - ${entry.exercise} | Sets: ${entry.sets}, Reps: ${entry.reps}, Weight: ${entry.weight}`;
+        content.appendChild(div);
+      });
+    }
+
+    function renderSummary() {
+      const content = document.getElementById("summaryContent");
+      content.innerHTML = "";
+      const summary = {};
+      history.forEach(entry => {
+        if (!summary[entry.exercise]) {
+          summary[entry.exercise] = [];
+        }
+        summary[entry.exercise].push(entry);
+      });
+      Object.keys(summary).forEach(ex => {
+        const div = document.createElement("div");
+        const avgWeight = (summary[ex].reduce((acc,e)=>acc+parseInt(e.weight),0)/summary[ex].length).toFixed(1);
+        div.textContent = `${ex} - Sessions: ${summary[ex].length}, Avg Weight: ${avgWeight}`;
+        content.appendChild(div);
+      });
     }
 
     renderTables();
