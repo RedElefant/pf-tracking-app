@@ -1,12 +1,21 @@
 {
   "name": "PF Circuit Tracker",
-  "short_name": "PF Circuit",
+  "short_name": "PFCircuit",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#f5f6fa",
-  "theme_color": "#d7bde2",
+  "theme_color": "#d8b4fe",
+  "description": "Track your Planet Fitness circuit workouts and view history.",
   "icons": [
-    { "src": "lifter.png", "sizes": "192x192", "type": "image/png" },
-    { "src": "bigguy.png", "sizes": "512x512", "type": "image/png" }
+    {
+      "src": "lifter.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "bigguy.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
   ]
 }
