@@ -1,253 +1,279 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PF Total Body Circuit</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f9f9f9;
-      margin: 0;
-      padding: 0;
-    }
-    h2 {
-      text-align: center;
-      margin-top: 1rem;
-      color: #333;
-    }
-    .button-container {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      margin: 15px 0;
-    }
-    button {
-      background-color: #d7bde2;
-      border: none;
-      border-radius: 8px;
-      padding: 10px 16px;
-      font-size: 14px;
-      color: #333;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #c39bd3;
-    }
-    table {
-      width: 95%;
-      margin: 0 auto 20px auto;
-      border-collapse: collapse;
-      font-size: 14px;
-    }
-    th {
-      background-color: #d7bde2;
-      color: #333;
-      padding: 8px;
-      text-align: center;
-    }
-    td {
-      padding: 6px;
-      text-align: center;
-      border-bottom: 1px solid #ddd;
-    }
-    select {
-      padding: 4px;
-      font-size: 14px;
-    }
-    .history, .summary {
-      display: none;
-      margin: 20px;
-    }
-    .history h3, .summary h3 {
-      text-align: center;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PF Circuit App</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* --- General Page Styles --- */
+body {
+  font-family: 'Roboto', sans-serif;
+  margin: 0;
+  padding: 15px;
+  background: linear-gradient(180deg, #f3e8ff 0%, #fef9ff 100%);
+  color: #333;
+  scroll-behavior: smooth;
+}
+
+/* --- Button Group --- */
+.button-container {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin: 20px 0;
+  flex-wrap: wrap;
+}
+
+.button-container button {
+  background-color: #d8b4fe;
+  color: #fff;
+  border: none;
+  padding: 12px 22px;
+  border-radius: 14px;
+  font-size: 16px;
+  cursor: pointer;
+  min-width: 150px;
+  text-align: center;
+  transition: background 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+.button-container button:hover { background-color: #c084fc; box-shadow: 0 6px 12px rgba(0,0,0,0.2);}
+.button-container button:active { background-color: #a855f7; box-shadow:0 3px 6px rgba(0,0,0,0.25); transform: translateY(1px); }
+
+/* --- Page containers --- */
+.page { transition: opacity 0.3s ease-in-out; }
+.page.hidden { display: none; opacity: 0; }
+.page.visible { display: block; opacity: 1; }
+
+/* --- Day Sections --- */
+.day-section {
+  background: #f7f0ff;
+  padding: 15px;
+  margin: 15px auto 30px auto;
+  border-radius: 14px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  width: 95%;
+  opacity: 0;
+  transform: translateY(15px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+.day-section.visible { opacity: 1; transform: translateY(0); }
+
+/* --- Day Titles --- */
+.day-title {
+  text-align: center;
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+  color: #192a56;
+  border-bottom: 2px solid #d8b4fe;
+  padding-bottom: 5px;
+}
+
+/* --- Tables --- */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  background: #fff;
+}
+th {
+  background-color: #d8b4fe;
+  color: #fff;
+  padding: 10px;
+  text-align: center;
+  font-weight: bold;
+}
+td {
+  padding: 10px;
+  text-align: center;
+  border-bottom: 1px solid #eee;
+}
+tr:last-child td { border-bottom: none; }
+select, input[type="checkbox"] { font-size: 1rem; padding: 6px; border-radius: 4px; border: 1px solid #ccc; }
+
+/* --- History & Summary Titles --- */
+h2 { text-align: center; color: #192a56; margin-bottom: 15px; }
+h3 { margin: 10px 0 5px; color: #40739e; }
+
+/* --- History Tables --- */
+#historyContent table { margin-bottom: 15px; width: 95%; margin-left:auto; margin-right:auto; }
+
+/* --- Back button --- */
+.back-btn {
+  display: block;
+  margin: 0 auto 20px auto;
+  background-color: #d8b4fe;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 14px;
+  font-size: 16px;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  transition: background 0.2s, box-shadow 0.2s;
+}
+.back-btn:hover { background-color: #c084fc; box-shadow:0 6px 12px rgba(0,0,0,0.2);}
+.back-btn:active { background-color:#a855f7; box-shadow:0 3px 6px rgba(0,0,0,0.25); transform:translateY(1px); }
+</style>
 </head>
 <body>
 
-  <h2>PF Total Body Circuit</h2>
+<h1 style="text-align:center;">3-Day PF Circuit Plan</h1>
 
-  <div class="button-container">
-    <button onclick="toggleView('history')">View History</button>
-    <button onclick="toggleView('summary')">Weekly Summary</button>
+<div class="button-container">
+  <button onclick="showPage('historyPage')">View History</button>
+  <button onclick="showPage('summaryPage')">Weekly Summary</button>
+</div>
+
+<!-- --- Main Page --- -->
+<div id="mainPage" class="page visible">
+  <div class="day-section">
+    <div class="day-title">Day 1 — Chest & Back Focus</div>
+    <table id="day1Table"><tr><th>Exercise</th><th>Sets</th><th>Reps</th><th>Weight</th><th>Done</th></tr></table>
   </div>
-
-  <div id="tables"></div>
-  <div class="history" id="historyView">
-    <h3>Workout History</h3>
-    <div id="historyContent"></div>
+  <div class="day-section">
+    <div class="day-title">Day 2 — Lower Body Focus</div>
+    <table id="day2Table"><tr><th>Exercise</th><th>Sets</th><th>Reps</th><th>Weight</th><th>Done</th></tr></table>
   </div>
-  <div class="summary" id="summaryView">
-    <h3>Weekly Summary</h3>
-    <div id="summaryContent"></div>
+  <div class="day-section">
+    <div class="day-title">Day 3 — Shoulders & Arms Focus</div>
+    <table id="day3Table"><tr><th>Exercise</th><th>Sets</th><th>Reps</th><th>Weight</th><th>Done</th></tr></table>
   </div>
+</div>
 
-  <script>
-    const exercises = {
-      "Day 1": [
-        "Chest Press Machine",
-        "Back Extension Machine",
-        "Lat Pulldown Machine",
-        "Seated Row Machine",
-        "Abdominal Crunch Machine",
-        "Torso Rotation Machine (per side)",
-        "Pec Deck (Butterfly) Machine"
-      ],
-      "Day 2": [
-        "Leg Press Machine",
-        "Seated Leg Curl Machine",
-        "Leg Extension Machine",
-        "Calf Extension Machine",
-        "Abdominal Crunch Machine",
-        "Hip Abduction Machine",
-        "Hip Adduction Machine",
-        "Lunge Machine"
-      ],
-      "Day 3": [
-        "Shoulder Press Machine",
-        "Torso Rotation Machine (per side)",
-        "Abdominal Crunch Machine",
-        "Bicep Curl Machine",
-        "Tricep Extension Machine",
-        "Seated Dip Machine",
-        "Rear Delt Fly (Reverse Pec Deck)",
-        "Dumbbell Lateral Raise"
-      ]
-    };
+<!-- --- History Page --- -->
+<div id="historyPage" class="page hidden">
+  <button class="back-btn" onclick="showPage('mainPage')">Back to Main</button>
+  <h2>Completed Exercises History</h2>
+  <div id="historyContent"></div>
+</div>
 
-    const repOptions = Array.from({length: 7}, (_,i) => 8 + i*2); // 8–20
-    const weightOptions = Array.from({length: 11}, (_,i) => 20 + i*10); // 20–120
-    let history = JSON.parse(localStorage.getItem('workoutHistory')) || [];
-    let lastSelections = JSON.parse(localStorage.getItem('lastSelections')) || {};
+<!-- --- Summary Page --- -->
+<div id="summaryPage" class="page hidden">
+  <button class="back-btn" onclick="showPage('mainPage')">Back to Main</button>
+  <h2>Weekly Summary</h2>
+  <div id="summaryContent"></div>
+</div>
 
-    function renderTables() {
-      const container = document.getElementById("tables");
-      container.innerHTML = "";
+<script>
+/* --- IndexedDB --- */
+let db;
+const request = indexedDB.open('WorkoutDB', 1);
+request.onupgradeneeded = function(e){ db = e.target.result; db.createObjectStore('workouts',{keyPath:'id',autoIncrement:true}); };
+request.onsuccess = function(e){ db = e.target.result; animateDaySections(); renderHistory(); renderSummary(); };
 
-      Object.keys(exercises).forEach(day => {
-        const table = document.createElement("table");
-        const caption = document.createElement("caption");
-        caption.innerHTML = `<h3>${day}</h3>`;
-        table.appendChild(caption);
+/* --- Dropdown data --- */
+const weightOptions = Array.from({length:11},(_,i)=>20+i*10);
+const repsOptions = Array.from({length:7},(_,i)=>8+i*2);
+function createDropdown(options, selected){ return `<select>${options.map(o=>`<option ${o==selected?'selected':''}>${o}</option>`).join('')}</select>`; }
 
-        const header = document.createElement("tr");
-        ["Exercise","Sets","Reps","Weight","Done"].forEach(h => {
-          const th = document.createElement("th");
-          th.textContent = h;
-          header.appendChild(th);
-        });
-        table.appendChild(header);
+/* --- Exercises --- */
+const dayExercises = {
+  1:['Chest Press Machine','Back Extension Machine','Lat Pulldown Machine','Seated Row Machine','Abdominal Crunch Machine','Torso Rotation Machine (per side)','Pec Deck (Butterfly) Machine'],
+  2:['Leg Press Machine','Seated Leg Curl Machine','Leg Extension Machine','Calf Extension Machine','Abdominal Crunch Machine','Hip Abduction Machine','Hip Adduction Machine','Lunge Machine'],
+  3:['Shoulder Press Machine','Torso Rotation Machine (per side)','Abdominal Crunch Machine','Bicep Curl Machine','Tricep Extension Machine','Seated Dip Machine','Rear Delt Fly (Reverse Pec Deck)','Dumbbell Lateral Raise']
+};
+const daySets = {1:3,2:3,3:3};
 
-        exercises[day].forEach(ex => {
-          const tr = document.createElement("tr");
+/* --- Last saved values --- */
+function getLastValue(exercise,type,callback){
+  const tx=db.transaction('workouts','readonly');
+  const store=tx.objectStore('workouts');
+  store.getAll().onsuccess=function(event){
+    const all=event.target.result.filter(e=>e.exercise===exercise);
+    if(all.length===0) callback(null);
+    else callback(all[all.length-1][type]);
+  };
+}
 
-          const tdEx = document.createElement("td");
-          tdEx.textContent = ex;
-          tr.appendChild(tdEx);
-
-          const tdSets = document.createElement("td");
-          tdSets.textContent = "3";
-          tr.appendChild(tdSets);
-
-          const tdReps = document.createElement("td");
-          const repSelect = document.createElement("select");
-          repOptions.forEach(val => {
-            const opt = document.createElement("option");
-            opt.value = val;
-            opt.textContent = val;
-            repSelect.appendChild(opt);
-          });
-          repSelect.value = lastSelections[ex]?.reps || repOptions[0];
-          tdReps.appendChild(repSelect);
-          tr.appendChild(tdReps);
-
-          const tdWeight = document.createElement("td");
-          const weightSelect = document.createElement("select");
-          weightOptions.forEach(val => {
-            const opt = document.createElement("option");
-            opt.value = val;
-            opt.textContent = val;
-            weightSelect.appendChild(opt);
-          });
-          weightSelect.value = lastSelections[ex]?.weight || weightOptions[0];
-          tdWeight.appendChild(weightSelect);
-          tr.appendChild(tdWeight);
-
-          const tdDone = document.createElement("td");
-          const chk = document.createElement("input");
-          chk.type = "checkbox";
-          chk.onchange = () => {
-            if (chk.checked) {
-              const entry = {
-                date: new Date().toLocaleDateString(),
-                day,
-                exercise: ex,
-                sets: 3,
-                reps: repSelect.value,
-                weight: weightSelect.value
-              };
-              history.push(entry);
-              localStorage.setItem('workoutHistory', JSON.stringify(history));
-              lastSelections[ex] = { reps: repSelect.value, weight: weightSelect.value };
-              localStorage.setItem('lastSelections', JSON.stringify(lastSelections));
-            }
-          };
-          tdDone.appendChild(chk);
-          tr.appendChild(tdDone);
-
-          table.appendChild(tr);
-        });
-        container.appendChild(table);
+/* --- Populate tables --- */
+for(let day=1;day<=3;day++){
+  const table=document.getElementById(`day${day}Table`);
+  dayExercises[day].forEach(ex=>{
+    getLastValue(ex,'reps',lastReps=>{
+      getLastValue(ex,'weight',lastWeight=>{
+        const row=document.createElement('tr');
+        const repsDropdown=createDropdown(repsOptions,lastReps||repsOptions[0]);
+        const weightDropdown=createDropdown(weightOptions,lastWeight||weightOptions[0]);
+        const checkbox=`<input type='checkbox' data-day='${day}'>`;
+        row.innerHTML=`<td>${ex}</td><td>${daySets[day]}</td><td>${repsDropdown}</td><td>${weightDropdown}</td><td>${checkbox}</td>`;
+        table.appendChild(row);
       });
+    });
+  });
+}
+
+/* --- Save completed --- */
+function saveExercise(day,exercise,sets,reps,weight){
+  const tx=db.transaction('workouts','readwrite');
+  const store=tx.objectStore('workouts');
+  store.add({date:new Date().toISOString().split('T')[0],day,exercise,sets,reps,weight,completed:true});
+  tx.oncomplete=()=>{ renderHistory(); renderSummary(); };
+}
+
+document.body.addEventListener('change',function(e){
+  if(e.target&&e.target.type==='checkbox'&&e.target.dataset.day){
+    const row=e.target.closest('tr');
+    if(e.target.checked){
+      const exercise=row.cells[0].textContent;
+      const sets=parseInt(row.cells[1].textContent);
+      const reps=parseInt(row.cells[2].querySelector('select').value);
+      const weight=parseInt(row.cells[3].querySelector('select').value);
+      const day=parseInt(e.target.dataset.day);
+      saveExercise(day,exercise,sets,reps,weight);
     }
+  }
+});
 
-    function toggleView(view) {
-      document.getElementById("historyView").style.display = "none";
-      document.getElementById("summaryView").style.display = "none";
-      document.getElementById("tables").style.display = "none";
+/* --- Animate day sections --- */
+function animateDaySections(){
+  const sections=document.querySelectorAll('.day-section');
+  sections.forEach((sec,index)=>{ setTimeout(()=>{sec.classList.add('visible');},index*100); });
+}
 
-      if (view === "history") {
-        document.getElementById("historyView").style.display = "block";
-        renderHistory();
-      } else if (view === "summary") {
-        document.getElementById("summaryView").style.display = "block";
-        renderSummary();
-      } else {
-        document.getElementById("tables").style.display = "block";
-      }
-    }
+/* --- Page switching --- */
+function showPage(pageId){
+  const pages=document.querySelectorAll('.page');
+  pages.forEach(p=>{ p.classList.remove('visible'); p.classList.add('hidden'); });
+  const target=document.getElementById(pageId);
+  target.classList.remove('hidden');
+  target.classList.add('visible');
+  window.scrollTo({top:0,behavior:'smooth'});
+  if(pageId==='mainPage') animateDaySections();
+}
 
-    function renderHistory() {
-      const content = document.getElementById("historyContent");
-      content.innerHTML = "";
-      history.forEach(entry => {
-        const div = document.createElement("div");
-        div.textContent = `${entry.date} - ${entry.day} - ${entry.exercise} | Sets: ${entry.sets}, Reps: ${entry.reps}, Weight: ${entry.weight}`;
-        content.appendChild(div);
+/* --- Render History --- */
+function renderHistory(){
+  const historyDiv=document.getElementById('historyContent');
+  historyDiv.innerHTML='';
+  const tx=db.transaction('workouts','readonly');
+  const store=tx.objectStore('workouts');
+  store.getAll().onsuccess=function(event){
+    const results=event.target.result;
+    if(results.length===0){ historyDiv.innerHTML='<p style="text-align:center;">No completed exercises yet.</p>'; return; }
+    const grouped={};
+    results.forEach(r=>{ if(!grouped[r.date]) grouped[r.date]=[]; grouped[r.date].push(r); });
+    for(const date in grouped){
+      const dayGroup=grouped[date];
+      const dateHeader=document.createElement('h3'); dateHeader.textContent=date; historyDiv.appendChild(dateHeader);
+      const tbl=document.createElement('table');
+      tbl.innerHTML='<tr><th>Day</th><th>Exercise</th><th>Sets × Reps</th><th>Weight</th></tr>';
+      dayGroup.forEach(e=>{
+        const row=document.createElement('tr');
+        row.innerHTML=`<td>${e.day}</td><td>${e.exercise}</td><td>${e.sets} × ${e.reps}</td><td>${e.weight}</td>`;
+        tbl.appendChild(row);
       });
+      historyDiv.appendChild(tbl);
     }
+  };
+}
 
-    function renderSummary() {
-      const content = document.getElementById("summaryContent");
-      content.innerHTML = "";
-      const summary = {};
-      history.forEach(entry => {
-        if (!summary[entry.exercise]) {
-          summary[entry.exercise] = [];
-        }
-        summary[entry.exercise].push(entry);
-      });
-      Object.keys(summary).forEach(ex => {
-        const div = document.createElement("div");
-        const avgWeight = (summary[ex].reduce((acc,e)=>acc+parseInt(e.weight),0)/summary[ex].length).toFixed(1);
-        div.textContent = `${ex} - Sessions: ${summary[ex].length}, Avg Weight: ${avgWeight}`;
-        content.appendChild(div);
-      });
-    }
-
-    renderTables();
-  </script>
-</body>
-</html>
+/* --- Render Weekly Summary --- */
+function renderSummary(){
+  const summaryDiv=document.getElementById('summaryContent');
+  summaryDiv
+}
