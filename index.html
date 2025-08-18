@@ -1,170 +1,157 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#d8b4fe">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PF Circuit App</title>
+<title>PF Circuit Tracker</title>
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#d8b4fe">
 <style>
-body { font-family:'Roboto', sans-serif; margin:0; padding:15px; background:#f5f6fa; color:#333; scroll-behavior:smooth; }
-.button-container { display:flex; justify-content:center; gap:12px; margin:20px 0; flex-wrap:wrap; }
-.button-container button { background-color:#d8b4fe; color:#fff; border:none; padding:12px 22px; border-radius:14px; font-size:16px; cursor:pointer; min-width:150px; text-align:center; transition: background 0.2s, box-shadow 0.2s; box-shadow:0 4px 8px rgba(0,0,0,0.15); }
-.button-container button:hover { background-color:#c084fc; box-shadow:0 6px 12px rgba(0,0,0,0.2); }
-.button-container button:active { background-color:#a855f7; box-shadow:0 3px 6px rgba(0,0,0,0.25); transform:translateY(1px); }
-
-.page { transition: opacity 0.3s ease-in-out; }
-.page.hidden { display:none; opacity:0; }
-.page.visible { display:block; opacity:1; }
-
-.day-section { background:#f7f0ff; padding:15px; margin:15px auto 30px auto; border-radius:14px; box-shadow:0 4px 12px rgba(0,0,0,0.08); width:95%; }
-.day-title { text-align:center; font-size:1.4rem; font-weight:700; margin-bottom:10px; color:#192a56; border-bottom:2px solid #d8b4fe; padding-bottom:5px; }
-
-table { width: 100%; border-collapse: collapse; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 6px rgba(0,0,0,0.08); background:#fff; table-layout: fixed; word-wrap: break-word; font-size:0.9rem; }
-th { background-color:#d8b4fe; color:#fff; padding:10px; text-align:center; font-weight:bold; }
-td { padding:6px 4px; text-align:center; border-bottom:1px solid #eee; }
-tr:last-child td { border-bottom:none; }
-select,input[type="checkbox"],button.delete-btn { font-size:0.85rem; padding:4px; border-radius:6px; }
-
-h2{text-align:center;color:#192a56;margin-bottom:15px;}
-h3{margin:10px 0 5px;color:#40739e;}
-#historyContent table,#summaryContent table{margin-bottom:15px;width:95%;margin-left:auto;margin-right:auto;}
-.back-btn { display:block; margin:0 auto 20px auto; background-color:#d8b4fe; color:#fff; border:none; padding:10px 20px; border-radius:14px; font-size:16px; cursor:pointer; box-shadow:0 4px 8px rgba(0,0,0,0.15); transition: background 0.2s, box-shadow 0.2s; }
-.back-btn:hover { background-color:#c084fc; box-shadow:0 6px 12px rgba(0,0,0,0.2); }
-.back-btn:active { background-color:#a855f7; box-shadow:0 3px 6px rgba(0,0,0,0.25); transform:translateY(1px);}
-
-.delete-btn { background-color:#f87171; color:#fff; border:none; padding:4px 8px; border-radius:8px; cursor:pointer; transition:background 0.2s; }
-.delete-btn:hover { background-color:#ef4444; }
-.delete-btn:active { background-color:#dc2626; transform:translateY(1px); }
-
-@media screen and (max-width:480px){ table{ font-size:0.8rem;} th,td{padding:4px 2px;} .day-title{ font-size:1.2rem; } .button-container button{ font-size:14px; padding:8px 16px; min-width:120px; } }
+  body { font-family: 'Roboto', sans-serif; margin: 0; background: #f5f6fa; color: #2f3640; }
+  h1 { text-align:center; color: #192a56; margin: 10px 0; }
+  .button-container { text-align:center; margin-bottom:10px; }
+  .button-container button { margin: 0 5px; padding:10px 15px; background:#d7bde2; color:#2f3640; border:none; border-radius:5px; cursor:pointer; }
+  table { width:100%; border-collapse:collapse; margin-bottom:20px; }
+  th, td { border:1px solid #ccc; padding:6px; text-align:center; }
+  th { background:#d7bde2; color:#2f3640; }
+  tr:nth-child(even) { background:#dcdde1; }
+  select, input[type="checkbox"] { padding:4px; border-radius:4px; font-size:0.9rem; }
+  .day-title { text-align:center; font-weight:700; margin:10px 0 5px; }
+  .page { display:none; }
+  .page.visible { display:block; }
+  .back-btn { margin:10px; padding:6px 10px; border:none; border-radius:4px; background:#d7bde2; color:#2f3640; cursor:pointer; }
 </style>
 </head>
 <body>
-<h1 style="text-align:center;">3-Day PF Circuit Plan</h1>
 
+<h1>3-Day PF Circuit Plan</h1>
 <div class="button-container">
   <button onclick="showPage('historyPage')">View History</button>
   <button onclick="showPage('summaryPage')">Weekly Summary</button>
 </div>
 
 <div id="mainPage" class="page visible">
-  <div class="day-section"><div class="day-title">Day 1 — Chest & Back Focus</div><table id="day1Table"><tr><th>Exercise</th><th>Sets</th><th>Reps</th><th>Weight</th><th>Done</th></tr></table></div>
-  <div class="day-section"><div class="day-title">Day 2 — Lower Body Focus</div><table id="day2Table"><tr><th>Exercise</th><th>Sets</th><th>Reps</th><th>Weight</th><th>Done</th></tr></table></div>
-  <div class="day-section"><div class="day-title">Day 3 — Shoulders & Arms Focus</div><table id="day3Table"><tr><th>Exercise</th><th>Sets</th><th>Reps</th><th>Weight</th><th>Done</th></tr></table></div>
+  <div class="day-title">Day 1 — Chest & Back Focus</div>
+  <table id="day1Table"><tr><th>Exercise</th><th>Sets</th><th>Reps</th><th>Weight</th><th>Done</th></tr></table>
+
+  <div class="day-title">Day 2 — Lower Body Focus</div>
+  <table id="day2Table"><tr><th>Exercise</th><th>Sets</th><th>Reps</th><th>Weight</th><th>Done</th></tr></table>
+
+  <div class="day-title">Day 3 — Shoulders & Arms Focus</div>
+  <table id="day3Table"><tr><th>Exercise</th><th>Sets</th><th>Reps</th><th>Weight</th><th>Done</th></tr></table>
 </div>
 
-<div id="historyPage" class="page hidden">
+<div id="historyPage" class="page">
   <button class="back-btn" onclick="showPage('mainPage')">Back to Main</button>
-  <h2>Completed Exercises History</h2>
+  <h2 style="text-align:center;">Completed Exercises History</h2>
   <div id="historyContent"></div>
 </div>
 
-<div id="summaryPage" class="page hidden">
+<div id="summaryPage" class="page">
   <button class="back-btn" onclick="showPage('mainPage')">Back to Main</button>
-  <h2>Weekly Summary</h2>
+  <h2 style="text-align:center;">Weekly Summary</h2>
   <div id="summaryContent"></div>
 </div>
 
 <script>
 let db;
 const request = indexedDB.open('WorkoutDB', 1);
-request.onupgradeneeded = e => { db = e.target.result; db.createObjectStore('workouts',{keyPath:'id',autoIncrement:true}); };
-request.onsuccess = async e => { db = e.target.result; await populateTables(); renderHistory(); renderSummary(); };
+request.onupgradeneeded = function(e) {
+  db = e.target.result;
+  db.createObjectStore('workouts', { keyPath: 'id', autoIncrement: true });
+};
+request.onsuccess = async function(e) {
+  db = e.target.result;
+  await populateTables();
+  renderHistory();
+};
 
-const dayExercises = {1:['Chest Press Machine','Back Extension Machine','Lat Pulldown Machine','Seated Row Machine','Abdominal Crunch Machine','Torso Rotation Machine (per side)','Pec Deck (Butterfly) Machine'],
-                      2:['Leg Press Machine','Seated Leg Curl Machine','Leg Extension Machine','Calf Extension Machine','Abdominal Crunch Machine','Hip Abduction Machine','Hip Adduction Machine','Lunge Machine'],
-                      3:['Shoulder Press Machine','Torso Rotation Machine (per side)','Abdominal Crunch Machine','Bicep Curl Machine','Tricep Extension Machine','Seated Dip Machine','Rear Delt Fly (Reverse Pec Deck)','Dumbbell Lateral Raise']};
-const daySets = {1:3,2:3,3:3};
+function saveExercise(day, exercise, sets, reps, weight) {
+  const tx = db.transaction('workouts','readwrite');
+  tx.objectStore('workouts').add({
+    date: new Date().toISOString().split('T')[0],
+    day, exercise, sets, reps, weight, completed:true
+  });
+  tx.oncomplete = renderHistory;
+}
+
+function deleteExercise(id) {
+  const tx = db.transaction('workouts','readwrite');
+  tx.objectStore('workouts').delete(id).onsuccess = renderHistory;
+}
+
+function renderHistory() {
+  const historyDiv = document.getElementById('historyContent');
+  historyDiv.innerHTML = '';
+  const tx = db.transaction('workouts','readonly');
+  tx.objectStore('workouts').getAll().onsuccess = function(event){
+    const results = event.target.result;
+    if(results.length===0){ historyDiv.innerHTML='<p>No completed exercises yet.</p>'; return; }
+    const grouped = {};
+    results.forEach(r => { if(!grouped[r.date]) grouped[r.date]=[]; grouped[r.date].push(r); });
+    for(const date in grouped){
+      const dayGroup = grouped[date];
+      const dateHeader = document.createElement('h3'); dateHeader.textContent = date; historyDiv.appendChild(dateHeader);
+      const tbl = document.createElement('table');
+      tbl.innerHTML = '<tr><th>Day</th><th>Exercise</th><th>Sets × Reps</th><th>Weight</th><th>Delete</th></tr>';
+      dayGroup.forEach(e => {
+        const row = document.createElement('tr');
+        row.innerHTML = `<td>${e.day}</td><td>${e.exercise}</td><td>${e.sets} × ${e.reps}</td><td>${e.weight}</td><td><button onclick="deleteExercise(${e.id})">Delete</button></td>`;
+        tbl.appendChild(row);
+      });
+      historyDiv.appendChild(tbl);
+    }
+  }
+}
+
+function showPage(pageId){
+  document.querySelectorAll('.page').forEach(p=>p.className='page hidden');
+  document.getElementById(pageId).className='page visible';
+}
+
 const weightOptions = Array.from({length:11},(_,i)=>20+i*10);
 const repsOptions = Array.from({length:7},(_,i)=>8+i*2);
+const dayExercises = {
+  1: ['Chest Press Machine','Back Extension Machine','Lat Pulldown Machine','Seated Row Machine','Abdominal Crunch Machine','Torso Rotation Machine (per side)','Pec Deck (Butterfly) Machine'],
+  2: ['Leg Press Machine','Seated Leg Curl Machine','Leg Extension Machine','Calf Extension Machine','Abdominal Crunch Machine','Hip Abduction Machine','Hip Adduction Machine','Lunge Machine'],
+  3: ['Shoulder Press Machine','Torso Rotation Machine (per side)','Abdominal Crunch Machine','Bicep Curl Machine','Tricep Extension Machine','Seated Dip Machine','Rear Delt Fly (Reverse Pec Deck)','Dumbbell Lateral Raise']
+};
+const daySets={1:3,2:3,3:3};
 
-function createDropdown(options, selected){ return `<select>${options.map(o=>`<option ${o==selected?'selected':''}>${o}</option>`).join('')}</select>`; }
-function getLastValue(exercise,type){ return new Promise(resolve => { const tx=db.transaction('workouts','readonly'); const store=tx.objectStore('workouts'); store.getAll().onsuccess=event=>{ const all=event.target.result.filter(e=>e.exercise===exercise); resolve(all.length?all[all.length-1][type]:null); }; }); }
+function createDropdown(options, selected){
+  return `<select>${options.map(o=>`<option ${o==selected?'selected':''}>${o}</option>`).join('')}</select>`;
+}
+
+async function getLastValue(exercise,type){
+  return new Promise(resolve=>{
+    const tx = db.transaction('workouts','readonly');
+    tx.objectStore('workouts').getAll().onsuccess = function(event){
+      const all = event.target.result.filter(e=>e.exercise===exercise);
+      resolve(all.length===0?null:all[all.length-1][type]);
+    }
+  });
+}
 
 async function populateTables(){
-  for(let day=1;day<=3;day++){
-    const table=document.getElementById(`day${day}Table`);
-    for(let ex of dayExercises[day]){
-      const lastReps = await getLastValue(ex,'reps');
-      const lastWeight = await getLastValue(ex,'weight');
-      const row=document.createElement('tr');
-      const repsDropdown = createDropdown(repsOptions,lastReps||repsOptions[0]);
-      const weightDropdown = createDropdown(weightOptions,lastWeight||weightOptions[0]);
+  for(let day=1; day<=3; day++){
+    const table = document.getElementById(`day${day}Table`);
+    for(const ex of dayExercises[day]){
+      const lastReps = await getLastValue(ex,'reps') || repsOptions[0];
+      const lastWeight = await getLastValue(ex,'weight') || weightOptions[0];
+      const row = document.createElement('tr');
+      const repsDropdown = createDropdown(repsOptions,lastReps);
+      const weightDropdown = createDropdown(weightOptions,lastWeight);
       const checkbox = `<input type='checkbox' data-day='${day}'>`;
-      row.innerHTML = `<td>${ex}</td><td>${daySets[day]}</td><td>${repsDropdown}</td><td>${weightDropdown}</td><td>${checkbox}</td>`;
+      row.innerHTML=`<td>${ex}</td><td>${daySets[day]}</td><td>${repsDropdown}</td><td>${weightDropdown}</td><td>${checkbox}</td>`;
       table.appendChild(row);
     }
   }
 }
 
-function saveExercise(day,exercise,sets,reps,weight){
-  const tx=db.transaction('workouts','readwrite'); const store=tx.objectStore('workouts');
-  store.add({date:new Date().toISOString().split('T')[0],day,exercise,sets,reps,weight,completed:true});
-  tx.oncomplete = ()=>{ renderHistory(); renderSummary(); };
-}
-
-function renderHistory(){
-  const div=document.getElementById('historyContent'); 
-  div.innerHTML='';
-  const tx=db.transaction('workouts','readonly'); 
-  const store=tx.objectStore('workouts');
-  store.getAll().onsuccess=event=>{
-    const results=event.target.result;
-    if(!results.length){ div.innerHTML='<p>No completed exercises yet.</p>'; return; }
-    const grouped={}; results.forEach(r=>{ if(!grouped[r.date])grouped[r.date]=[]; grouped[r.date].push(r); });
-    
-    for(const date in grouped){
-      const dayGroup=grouped[date];
-      const header=document.createElement('h3'); header.textContent=date; div.appendChild(header);
-
-      const tbl=document.createElement('table'); 
-      tbl.innerHTML='<tr><th>Day</th><th>Exercise</th><th>Sets × Reps</th><th>Weight</th><th>Delete</th></tr>';
-
-      dayGroup.forEach(e=>{
-        const row=document.createElement('tr');
-        row.innerHTML=`
-          <td>${e.day}</td>
-          <td>${e.exercise}</td>
-          <td>${e.sets} × ${e.reps}</td>
-          <td>${e.weight}</td>
-          <td><button class="delete-btn" data-id="${e.id}">Delete</button></td>
-        `;
-        tbl.appendChild(row);
-      });
-      div.appendChild(tbl);
-    }
-
-    div.querySelectorAll('.delete-btn').forEach(btn=>{
-      btn.addEventListener('click',()=>{
-        const id = parseInt(btn.dataset.id);
-        const tx=db.transaction('workouts','readwrite'); 
-        const store=tx.objectStore('workouts'); 
-        store.delete(id);
-        tx.oncomplete = ()=>{ renderHistory(); renderSummary(); };
-      });
-    });
-  };
-}
-
-function renderSummary(){
-  const div=document.getElementById('summaryContent'); div.innerHTML='';
-  const tx=db.transaction('workouts','readonly'); const store=tx.objectStore('workouts');
-  store.getAll().onsuccess=event=>{
-    const results=event.target.result;
-    if(!results.length){ div.innerHTML='<p>No exercises yet.</p>'; return; }
-    const dayTotals={1:0,2:0,3:0};
-    results.forEach(r=>{ if(r.completed) dayTotals[r.day]+=(r.sets*r.reps); });
-    const tbl=document.createElement('table'); tbl.innerHTML='<tr><th>Day</th><th>Total Completed Reps</th></tr>';
-    for(const day in dayTotals) tbl.innerHTML+=`<tr><td>${day}</td><td>${dayTotals[day]}</td></tr>`;
-    div.appendChild(tbl);
-  };
-}
-
-document.body.addEventListener('change', e=>{
+document.body.addEventListener('change', function(e){
   if(e.target && e.target.type==='checkbox' && e.target.dataset.day){
-    const row=e.target.closest('tr');
+    const row = e.target.closest('tr');
     if(e.target.checked){
       const exercise=row.cells[0].textContent;
       const sets=parseInt(row.cells[1].textContent);
@@ -176,20 +163,14 @@ document.body.addEventListener('change', e=>{
   }
 });
 
-function showPage(pageId){
-  ['mainPage','historyPage','summaryPage'].forEach(id=>document.getElementById(id).className='page hidden');
-  document.getElementById(pageId).className='page visible';
-}
+// Optional: Weekly summary logic
+</script>
 
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js').then(reg => {
-      console.log('ServiceWorker registered: ', reg);
-    }).catch(err => {
-      console.log('ServiceWorker registration failed: ', err);
-    });
-  });
+<script>
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').then(reg=>console.log('ServiceWorker registered',reg)).catch(err=>console.log('ServiceWorker registration failed',err)));
 }
 </script>
+
 </body>
 </html>
