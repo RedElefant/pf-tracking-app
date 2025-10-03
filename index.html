@@ -73,9 +73,9 @@ request.onsuccess = async e => { db = e.target.result; await populateTables(); r
 
 const dayExercises = {1:['Chest Press Machine','Back Extension Machine','Lat Pulldown Machine','Seated Row Machine','Ab Crunch Machine','Pec Machine','Romanian Deadlift'],
                       2:['Leg Press Machine','Seated Leg Curl Machine','Leg Extension Machine','Calf Extension Machine','Ab Crunch Machine','Hip Abduction Machine','Hip Adduction Machine','Lunge Machine'],
-                      3:['Shoulder Press Machine','Abdominal Crunch Machine','Bicep Curl Machine','Tricep Extension Machine','Seated Dip Machine','Rear Delt Fly','Dumbbell Lateral Raise']};
+                      3:['Shoulder Press Machine','Ab Crunch Machine','Bicep Curl Machine','Tricep Extension Machine','Rear Delt Fly','Dumbbell Lateral Raise', 'Overhead Dumbbell Tricep Extension']};
 const daySets = {1:3,2:3,3:3};
-const weightOptions = Array.from({length:11},(_,i)=>40+i*10);
+const weightOptions = Array.from({length:11},(_,i)=>10+i*20);
 const repsOptions = Array.from({length:7},(_,i)=>8+i*2);
 
 function createDropdown(options, selected){ return `<select>${options.map(o=>`<option ${o==selected?'selected':''}>${o}</option>`).join('')}</select>`; }
