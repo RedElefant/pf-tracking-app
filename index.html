@@ -48,9 +48,9 @@ h3{margin:10px 0 5px;color:#40739e;}
 </div>
 
 <div id="mainPage" class="page visible">
-  <div class="day-section"><div class="day-title">Day 1 — Chest & Back Focus</div><table id="day1Table"><tr><th>Exercise</th><th>Sets</th><th>Reps</th><th>Weight</th><th>Done</th></tr></table></div>
-  <div class="day-section"><div class="day-title">Day 2 — Lower Body Focus</div><table id="day2Table"><tr><th>Exercise</th><th>Sets</th><th>Reps</th><th>Weight</th><th>Done</th></tr></table></div>
-  <div class="day-section"><div class="day-title">Day 3 — Shoulders & Arms Focus</div><table id="day3Table"><tr><th>Exercise</th><th>Sets</th><th>Reps</th><th>Weight</th><th>Done</th></tr></table></div>
+  <div class="day-section"><div class="day-title">Day 1 — PUSH (Chest, Shoulders, Triceps, Core Stability)</div><table id="day1Table"><tr><th>Exercise</th><th>Sets</th><th>Reps</th><th>Weight</th><th>Done</th></tr></table></div>
+  <div class="day-section"><div class="day-title">Day 2 — PULL (Back, Biceps, Posterior Chain, Core Rotation)</div><table id="day2Table"><tr><th>Exercise</th><th>Sets</th><th>Reps</th><th>Weight</th><th>Done</th></tr></table></div>
+  <div class="day-section"><div class="day-title">Day 3 — LIFT (Legs, Glutes, Core)</div><table id="day3Table"><tr><th>Exercise</th><th>Sets</th><th>Reps</th><th>Weight</th><th>Done</th></tr></table></div>
 </div>
 
 <div id="historyPage" class="page hidden">
@@ -71,11 +71,11 @@ const request = indexedDB.open('WorkoutDB', 1);
 request.onupgradeneeded = e => { db = e.target.result; db.createObjectStore('workouts',{keyPath:'id',autoIncrement:true}); };
 request.onsuccess = async e => { db = e.target.result; await populateTables(); renderHistory(); renderSummary(); };
 
-const dayExercises = {1:['Chest Press Machine','Back Extension Machine','Lat Pulldown Machine','Seated Row Machine','Ab Crunch Machine','Pec Machine','Romanian Deadlift'],
-                      2:['Leg Press Machine','Seated Leg Curl Machine','Leg Extension Machine','Calf Extension Machine','Ab Crunch Machine','Hip Abduction Machine','Hip Adduction Machine','Lunge Machine'],
-                      3:['Shoulder Press Machine','Ab Crunch Machine','Bicep Curl Machine','Tricep Extension Machine','Rear Delt Fly','Dumbbell Lateral Raise', 'Overhead Dumbbell Tricep Extension']};
+const dayExercises = {1:['Dumbbell Bench Press','Dumbbell Seated Shoulder Press','Standing Dumbbell Overhead Tricep Extension','Cable Chest Fly','Tricep Rope Pushdown','Incline Smith Machine Press','Plank + Shoulder Tap'],
+                      2:['Lat Pulldown Machine','Dumbbell One-Arm Row','Dumbbell Bicep Curl','Dumbbell Hammer Curl','Cable Oblique Pulls','Rope Face Pull','Seated Cable Row',],
+                      3:['Smith Machine Deadlift','Dumbbell Goblet Squat','Dumbbell Walking Lunges','Glute Bridge','Cable Woodchop','Back Extension Machine','Leg Press Machine']};
 const daySets = {1:3,2:3,3:3};
-const weightOptions = Array.from({length:11},(_,i)=>10+i*20);
+const weightOptions = Array.from({length:11},(_,i)=>15+i*5);
 const repsOptions = Array.from({length:7},(_,i)=>8+i*2);
 
 function createDropdown(options, selected){ return `<select>${options.map(o=>`<option ${o==selected?'selected':''}>${o}</option>`).join('')}</select>`; }
