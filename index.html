@@ -20,8 +20,19 @@ body { font-family:'Roboto', sans-serif; margin:0; padding:15px; background:#000
 .day-title { text-align:center; font-size:1.4rem; font-weight:700; margin-bottom:10px; color:#192a56; border-bottom:2px solid #d8b4fe; padding-bottom:5px; }
 
 table { width: 100%; border-collapse: collapse; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 6px rgba(0,0,0,0.08); background:#fff; table-layout: fixed; word-wrap: break-word; font-size:0.9rem; }
-th { background-color:#d8b4fe; color:#fff; padding:10px; text-align:center; font-weight:bold; }
-td { padding:6px 4px; text-align:center; border-bottom:1px solid #eee; }
+th, td {
+  border: 1px solid #ccc;
+  padding: 10px;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+td:first-child {
+  white-space: normal; /* allow wrapping for long names, but not mid-word */
+  word-break: keep-all;
+  max-width: 160px;
+}
 tr:last-child td { border-bottom:none; }
 select,input[type="checkbox"],button.delete-btn { font-size:0.85rem; padding:4px; border-radius:6px; }
 
@@ -75,8 +86,8 @@ const dayExercises = {1:['Dumbbell Bench Press','Dumbbell Seated Shoulder Press'
                       2:['Lat Pulldown Machine','Dumbbell One-Arm Row','Dumbbell Bicep Curl','Dumbbell Hammer Curl','Cable Oblique Pulls','Rope Face Pull','Seated Cable Row',],
                       3:['Smith Machine Deadlift','Dumbbell Goblet Squat','Dumbbell Walking Lunges','Glute Bridge','Cable Woodchop','Back Extension Machine','Leg Press Machine']};
 const daySets = {1:3,2:3,3:3};
-const weightOptions = Array.from({length:11},(_,i)=>15+i*5);
-const repsOptions = Array.from({length:7},(_,i)=>8+i*2);
+const weightOptions = Array.from({length:20},(_,i)=>15+i*5);
+const repsOptions = Array.from({length:7},(_,i)=>10+i*2);
 
 function createDropdown(options, selected){ return `<select>${options.map(o=>`<option ${o==selected?'selected':''}>${o}</option>`).join('')}</select>`; }
 function getLastValue(exercise,type){ return new Promise(resolve => { const tx=db.transaction('workouts','readonly'); const store=tx.objectStore('workouts'); store.getAll().onsuccess=event=>{ const all=event.target.result.filter(e=>e.exercise===exercise); resolve(all.length?all[all.length-1][type]:null); }; }); }
