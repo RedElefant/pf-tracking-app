@@ -1,426 +1,391 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Planet Fitness Strength Tracker</title>
-  <link rel="manifest" href="manifest.json" />
-  <link rel="stylesheet" href="styles.css" />
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <style>
-    body {
-      font-family: "Segoe UI", sans-serif;
-      background-color: #f5f4fa;
-      margin: 0;
-      padding: 20px;
-      color: #333;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PF Circuit App</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+body { font-family:'Roboto', sans-serif; margin:0; padding:15px; background:#000000; color:#a855f7; scroll-behavior:smooth; }
+.button-container { display:flex; justify-content:center; gap:12px; margin:20px 0; flex-wrap:wrap; }
+.button-container button { background-color:#d8b4fe; color:#fff; border:none; padding:12px 22px; border-radius:14px; font-size:16px; cursor:pointer; min-width:150px; text-align:center; transition: background 0.2s, box-shadow 0.2s; box-shadow:0 4px 8px rgba(0,0,0,0.15); }
+.button-container button:hover { background-color:#c084fc; box-shadow:0 6px 12px rgba(0,0,0,0.2); }
+.button-container button:active { background-color:#a855f7; box-shadow:0 3px 6px rgba(0,0,0,0.25); transform:translateY(1px); }
 
-    h1 {
-      text-align: center;
-      color: #4b0082;
-    }
+.page { transition: opacity 0.3s ease-in-out; }
+.page.hidden { display:none; opacity:0; }
+.page.visible { display:block; opacity:1; }
 
-    .button-group {
-      display: flex;
-      justify-content: center;
-      gap: 15px;
-      margin-bottom: 20px;
-    }
+.day-section { background:#f7f0ff; padding:15px; margin:15px auto 30px auto; border-radius:14px; box-shadow:0 4px 12px rgba(0,0,0,0.08); width:95%; }
+.day-title { text-align:center; font-size:1.4rem; font-weight:700; margin-bottom:10px; color:#192a56; border-bottom:2px solid #d8b4fe; padding-bottom:5px; }
 
-    button {
-      background-color: #d6b4fc;
-      color: #fff;
-      border: none;
-      padding: 10px 18px;
-      border-radius: 8px;
-      font-size: 15px;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
+table { width: 100%; border-collapse: collapse; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 6px rgba(0,0,0,0.08); background:#fff; table-layout: fixed; word-wrap: break-word; font-size:0.9rem; }
+th, td { border: 1px solid #ccc; padding: 10px; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+td:first-child { white-space: normal; word-break: keep-all; max-width: 160px; }
+tr:last-child td { border-bottom:none; }
+select,input[type="checkbox"],button.delete-btn { font-size:0.85rem; padding:4px; border-radius:6px; }
 
-    button:hover {
-      background-color: #c49bf8;
-    }
-
-    table {
-      border-collapse: collapse;
-      width: 100%;
-      margin-bottom: 20px;
-      font-size: 15px;
-      background-color: #fff;
-      border-radius: 10px;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-      overflow: hidden;
-    }
-
-    th, td {
-      border: 1px solid #ddd;
-      text-align: center;
-      padding: 8px;
-      white-space: nowrap;
-    }
-
-    th {
-      background-color: #ece6ff;
-      color: #333;
-    }
-
-    tr:nth-child(even) {
-      background-color: #faf8ff;
-    }
-
-    .hidden {
-      display: none;
-    }
-
-    #allTimeToggle {
-      transform: scale(1.2);
-      margin-left: 5px;
-      cursor: pointer;
-    }
-
-    #chartContainer {
-      margin-top: 25px;
-    }
-
-    #chartContainer h3 {
-      text-align: center;
-      color: #4b0082;
-      margin-bottom: 8px;
-    }
-
-    #exerciseFilter {
-      margin-left: 10px;
-      padding: 4px 8px;
-    }
-
-    .nav-btn {
-      background-color: #7b5be3;
-    }
-
-    .nav-btn:hover {
-      background-color: #6a4dd0;
-    }
-  </style>
+h2{text-align:center;color:#192a56;margin-bottom:15px;}
+h3{margin:10px 0 5px;color:#40739e;}
+#historyContent table,#summaryContent table{margin-bottom:15px;width:95%;margin-left:auto;margin-right:auto;}
+.back-btn { display:block; margin:0 auto 20px auto; background-color:#d8b4fe; color:#fff; border:none; padding:10px 20px; border-radius:14px; font-size:16px; cursor:pointer; box-shadow:0 4px 8px rgba(0,0,0,0.15); transition: background 0.2s, box-shadow 0.2s; }
+.back-btn:hover { background-color:#c084fc; box-shadow:0 6px 12px rgba(0,0,0,0.2); }
+.back-btn:active { background-color:#a855f7; box-shadow:0 3px 6px rgba(0,0,0,0.25); transform:translateY(1px);}
+.delete-btn { background-color:#f87171; color:#fff; border:none; padding:4px 8px; border-radius:8px; cursor:pointer; transition:background 0.2s; }
+.delete-btn:hover { background-color:#ef4444; }
+.delete-btn:active { background-color:#dc2626; transform:translateY(1px); }
+@media screen and (max-width:480px){ table{ font-size:0.8rem;} th,td{padding:4px 2px;} .day-title{ font-size:1.2rem; } .button-container button{ font-size:14px; padding:8px 16px; min-width:120px; } }
+</style>
 </head>
 <body>
-  <h1>Planet Fitness Strength Tracker</h1>
+<h1 style="text-align:center;">3-Day PF Circuit Plan</h1>
 
-  <div class="button-group">
-    <button id="viewHistoryBtn">View History</button>
-    <button id="weeklySummaryBtn">Weekly Summary</button>
+<div class="button-container">
+  <button onclick="showPage('historyPage')">View History</button>
+  <button onclick="showPage('summaryPage')">Weekly Summary</button>
+</div>
+
+<div id="mainPage" class="page visible">
+  <div class="day-section"><div class="day-title">Day 1 — PUSH (Chest, Shoulders, Triceps, Core Stability)</div><table id="day1Table"><tr><th>Exercise</th><th>Sets</th><th>Reps</th><th>Weight</th><th>Done</th></tr></table></div>
+  <div class="day-section"><div class="day-title">Day 2 — PULL (Back, Biceps, Posterior Chain, Core Rotation)</div><table id="day2Table"><tr><th>Exercise</th><th>Sets</th><th>Reps</th><th>Weight</th><th>Done</th></tr></table></div>
+  <div class="day-section"><div class="day-title">Day 3 — LIFT (Legs, Glutes, Core)</div><table id="day3Table"><tr><th>Exercise</th><th>Sets</th><th>Reps</th><th>Weight</th><th>Done</th></tr></table></div>
+</div>
+
+<div id="historyPage" class="page hidden">
+  <button class="back-btn" onclick="showPage('mainPage')">Back to Main</button>
+  <h2>Completed Exercises History</h2>
+
+  <div style="text-align:center; margin-bottom:10px;">
+    <label for="exerciseFilter">Filter by Exercise: </label>
+    <select id="exerciseFilter"><option value="">All</option></select>
+    <label style="margin-left:12px;"><input type="checkbox" id="allTimeToggle"> Show All Time</label>
   </div>
 
-  <!-- Workout Log -->
-  <div id="workoutView">
-    <table id="workoutTable">
-      <thead>
-        <tr>
-          <th>Exercise</th>
-          <th>Weight</th>
-          <th>Reps</th>
-          <th>Sets</th>
-          <th>Save</th>
-        </tr>
-      </thead>
-      <tbody id="workoutTableBody"></tbody>
-    </table>
-  </div>
+  <canvas id="progressChart" style="max-width:95%; margin:20px auto; display:block; background:#fff; border-radius:12px; padding:10px;"></canvas>
 
-  <!-- History -->
-  <div id="historyView" class="hidden">
-    <h2 style="text-align:center;">Workout History</h2>
-    <table id="historyTable">
-      <thead>
-        <tr>
-          <th>Date</th>
-          <th>Exercise</th>
-          <th>Weight</th>
-          <th>Reps</th>
-          <th>Sets</th>
-          <th>Delete</th>
-        </tr>
-      </thead>
-      <tbody id="historyTableBody"></tbody>
-    </table>
-    <div style="text-align:center;">
-      <button class="nav-btn" onclick="showMainView()">Back to Main</button>
-    </div>
-  </div>
+  <div id="historyContent"></div>
+</div>
 
-  <!-- Weekly Summary -->
-  <div id="weeklySummaryView" class="hidden">
-    <h2 style="text-align:center;">Weekly Summary</h2>
-    <table id="summaryTable">
-      <thead>
-        <tr>
-          <th>Exercise</th>
-          <th>Avg Weight</th>
-          <th>Total Reps</th>
-          <th>Workouts</th>
-        </tr>
-      </thead>
-      <tbody id="summaryTableBody"></tbody>
-    </table>
+<div id="summaryPage" class="page hidden">
+  <button class="back-btn" onclick="showPage('mainPage')">Back to Main</button>
+  <h2>Weekly Summary</h2>
+  <div id="summaryContent"></div>
+</div>
 
-    <div id="chartContainer">
-      <h3>Progress Chart</h3>
-      <div style="text-align:center; margin-bottom:10px;">
-        <label for="exerciseFilter">Filter by Exercise:</label>
-        <select id="exerciseFilter"></select>
-        <label style="margin-left:15px;">
-          <input type="checkbox" id="allTimeToggle" />
-          Show All Time
-        </label>
-      </div>
-      <canvas id="progressChart" width="100%" height="60"></canvas>
-    </div>
+<script>
+/* === IndexedDB initialization and integration (preserve existing stores) === */
+let db;
+const request = indexedDB.open('WorkoutDB', 2);
+request.onupgradeneeded = e => {
+  db = e.target.result;
+  if(!db.objectStoreNames.contains('workouts'))
+    db.createObjectStore('workouts',{keyPath:'id',autoIncrement:true});
+  // Add workoutHistory store if missing
+  if(!db.objectStoreNames.contains('workoutHistory')){
+    const store = db.createObjectStore('workoutHistory',{keyPath:'id',autoIncrement:true});
+    store.createIndex('exercise','exercise',{unique:false});
+    store.createIndex('date','date',{unique:false});
+  }
+};
+request.onsuccess = async e => {
+  db = e.target.result;
+  await populateTables();
+  renderHistory();              // original history (workouts)
+  renderSummary();              // original summary
+  await populateExerciseFilterUI(); // populate filter from workoutHistory
+};
 
-    <div style="text-align:center;">
-      <button class="nav-btn" onclick="showMainView()">Back to Main</button>
-    </div>
-  </div>
+/* ========== EXISTING FUNCTIONALITY (unchanged) ========== */
+const dayExercises = {1:['Dumbbell Bench Press','Dumbbell Seated Shoulder Press','Standing Dumbbell Overhead Tricep Extension','Cable Chest Fly','Tricep Rope Pushdown','Incline Smith Machine Press','Plank + Shoulder Tap'],
+                      2:['Lat Pulldown Machine','Dumbbell One-Arm Row','Dumbbell Bicep Curl','Dumbbell Hammer Curl','Cable Oblique Pulls','Rope Face Pull','Seated Cable Row'],
+                      3:['Smith Machine Deadlift','Dumbbell Goblet Squat','Dumbbell Walking Lunges','Glute Bridge','Cable Woodchop','Back Extension Machine','Leg Press Machine']};
+const daySets = {1:3,2:3,3:3};
+const weightOptions = Array.from({length:20},(_,i)=>15+i*5);
+const repsOptions = Array.from({length:7},(_,i)=>10+i*2);
 
-  <script>
-    let db;
-    const dbName = "PFStrengthDB";
-    const version = 2;
+function createDropdown(options, selected){ return `<select>${options.map(o=>`<option ${o==selected?'selected':''}>${o}</option>`).join('')}</select>`; }
+function getLastValue(exercise,type){ return new Promise(resolve => { const tx=db.transaction('workouts','readonly'); const store=tx.objectStore('workouts'); store.getAll().onsuccess=event=>{ const all=event.target.result.filter(e=>e.exercise===exercise); resolve(all.length?all[all.length-1][type]:null); }; }); }
 
-    async function initDB() {
-      return new Promise((resolve, reject) => {
-        const request = indexedDB.open(dbName, version);
-        request.onupgradeneeded = event => {
-          db = event.target.result;
-          if (!db.objectStoreNames.contains("workouts")) {
-            db.createObjectStore("workouts", { keyPath: "id", autoIncrement: true });
-          }
-        };
-        request.onsuccess = event => {
-          db = event.target.result;
-          resolve();
-        };
-        request.onerror = () => reject();
-      });
+async function populateTables(){
+  for(let day=1;day<=3;day++){
+    const table=document.getElementById(`day${day}Table`);
+    for(let ex of dayExercises[day]){
+      const lastReps = await getLastValue(ex,'reps');
+      const lastWeight = await getLastValue(ex,'weight');
+      const row=document.createElement('tr');
+      const repsDropdown = createDropdown(repsOptions,lastReps||repsOptions[0]);
+      const weightDropdown = createDropdown(weightOptions,lastWeight||weightOptions[0]);
+      const checkbox = `<input type='checkbox' data-day='${day}'>`;
+      row.innerHTML = `<td>${ex}</td><td>${daySets[day]}</td><td>${repsDropdown}</td><td>${weightDropdown}</td><td>${checkbox}</td>`;
+      table.appendChild(row);
     }
+  }
+}
 
-    async function saveWorkout(exercise, weight, reps, sets) {
-      const tx = db.transaction("workouts", "readwrite");
-      const store = tx.objectStore("workouts");
-      const date = new Date().toISOString().split("T")[0];
-      store.add({ date, exercise, weight, reps, sets });
+function saveExercise(day,exercise,sets,reps,weight){
+  const tx=db.transaction('workouts','readwrite'); const store=tx.objectStore('workouts');
+  store.add({date:new Date().toISOString().split('T')[0],day,exercise,sets,reps,weight,completed:true});
+  tx.oncomplete = ()=>{ renderHistory(); renderSummary(); saveWorkoutEntry(exercise,sets,reps,weight); };
+}
+
+/* ========== NEW HISTORY TRACKING (workoutHistory store) ========== */
+/* Save an entry to workoutHistory each time a workout is saved */
+function saveWorkoutEntry(exercise,sets,reps,weight){
+  try {
+    const tx = db.transaction('workoutHistory','readwrite');
+    const store = tx.objectStore('workoutHistory');
+    store.add({date:new Date().toISOString().split('T')[0],exercise,sets: Number(sets) || 0, reps: Number(reps) || 0, weight: Number(weight) || 0});
+  } catch (err) {
+    // If store doesn't exist for some reason, ignore silently (DB upgrade should have created it)
+    console.warn('saveWorkoutEntry error:', err);
+  }
+}
+
+/* Helpers to query workoutHistory */
+async function getWorkoutHistory(){
+  return new Promise((resolve,reject)=>{
+    try {
+      const tx=db.transaction('workoutHistory','readonly');
+      const store=tx.objectStore('workoutHistory');
+      const req=store.getAll();
+      req.onsuccess = e => resolve(e.target.result || []);
+      req.onerror = e => reject(e);
+    } catch (err) {
+      resolve([]); // if store missing, return empty
     }
+  });
+}
 
-    async function getWorkoutHistory() {
-      return new Promise((resolve, reject) => {
-        const tx = db.transaction("workouts", "readonly");
-        const store = tx.objectStore("workouts");
-        const request = store.getAll();
-        request.onsuccess = () => resolve(request.result);
-        request.onerror = () => reject();
-      });
+async function getWorkoutHistoryByExercise(exercise){
+  return new Promise((resolve,reject)=>{
+    try {
+      const tx=db.transaction('workoutHistory','readonly');
+      const idx=tx.objectStore('workoutHistory').index('exercise');
+      const req=idx.getAll(exercise);
+      req.onsuccess=e=>resolve(e.target.result||[]);
+      req.onerror=e=>reject(e);
+    } catch (err) {
+      resolve([]);
     }
+  });
+}
 
-    async function deleteWorkout(id) {
-      const tx = db.transaction("workouts", "readwrite");
-      const store = tx.objectStore("workouts");
-      store.delete(id);
-    }
+/* ========== UI: Filter dropdown and rendering filtered history ========== */
+async function populateExerciseFilterUI(){
+  const sel=document.getElementById('exerciseFilter'); if(!sel) return;
+  const data = await getWorkoutHistory();
+  const exercises = [...new Set(data.map(x=>x.exercise))].sort();
+  sel.innerHTML = '<option value="">All</option>';
+  exercises.forEach(ex=>{
+    const opt=document.createElement('option');
+    opt.value = ex;
+    opt.textContent = ex;
+    sel.appendChild(opt);
+  });
 
-    async function populateWorkoutTable() {
-      const exercises = [
-        "Leg Press", "Lunge Machine", "Seated Row", "Lat Pulldown", "Chest Press",
-        "Pec Deck", "Shoulder Press", "Dumbbell Lateral Raise", "Bicep Curl",
-        "Triceps Pushdown", "Cable Oblique Pulls"
-      ];
+  sel.addEventListener('change', async ()=>{
+    const val = sel.value;
+    const list = val ? await getWorkoutHistoryByExercise(val) : await getWorkoutHistory();
+    renderFilteredHistory(list);
+    // render chart for selection (if any)
+    if(val) renderProgressChart(val);
+    else if(chartInstance) { chartInstance.destroy(); chartInstance = null; }
+  });
 
-      const tbody = document.getElementById("workoutTableBody");
-      tbody.innerHTML = "";
-      for (const ex of exercises) {
-        const row = document.createElement("tr");
-        row.innerHTML = `
-          <td>${ex}</td>
-          <td><input type="number" min="0" id="weight-${ex}" style="width:80px;"></td>
-          <td><input type="number" min="0" id="reps-${ex}" style="width:60px;"></td>
-          <td><input type="number" min="0" id="sets-${ex}" style="width:60px;"></td>
-          <td><button onclick="saveExercise('${ex}')">💾</button></td>`;
-        tbody.appendChild(row);
-      }
-    }
+  // If there is a preselected value, trigger change to show data
+  // (Useful when switching to history view)
+}
 
-    async function saveExercise(exercise) {
-      const weight = document.getElementById(`weight-${exercise}`).value || 0;
-      const reps = document.getElementById(`reps-${exercise}`).value || 0;
-      const sets = document.getElementById(`sets-${exercise}`).value || 0;
-      await saveWorkout(exercise, weight, reps, sets);
-    }
+/* Render a filtered list (grouped by date) into #historyContent */
+async function renderFilteredHistory(list){
+  const div=document.getElementById('historyContent');
+  div.innerHTML = '';
+  if(!list || list.length === 0) { div.innerHTML = '<p>No entries.</p>'; return; }
+  const grouped = {};
+  list.forEach(r=>{ if(!grouped[r.date]) grouped[r.date] = []; grouped[r.date].push(r); });
 
-    async function showHistory() {
-      const allWorkouts = await getWorkoutHistory();
-      const tbody = document.getElementById("historyTableBody");
-      tbody.innerHTML = "";
-      allWorkouts.forEach(w => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>${w.date}</td>
-          <td>${w.exercise}</td>
-          <td>${w.weight}</td>
-          <td>${w.reps}</td>
-          <td>${w.sets}</td>
-          <td><button onclick="removeWorkout(${w.id})">🗑️</button></td>`;
-        tbody.appendChild(tr);
-      });
-      document.getElementById("workoutView").classList.add("hidden");
-      document.getElementById("weeklySummaryView").classList.add("hidden");
-      document.getElementById("historyView").classList.remove("hidden");
-    }
-
-    async function removeWorkout(id) {
-      await deleteWorkout(id);
-      showHistory();
-    }
-
-    function showMainView() {
-      document.getElementById("historyView").classList.add("hidden");
-      document.getElementById("weeklySummaryView").classList.add("hidden");
-      document.getElementById("workoutView").classList.remove("hidden");
-    }
-
-    // Weekly summary + chart
-    let chartInstance;
-
-    async function getLast7DaysSummary() {
-      const all = await getWorkoutHistory();
-      const cutoff = new Date();
-      cutoff.setDate(cutoff.getDate() - 7);
-      const recent = all.filter(w => new Date(w.date) >= cutoff);
-      const grouped = {};
-      recent.forEach(w => {
-        if (!grouped[w.exercise]) grouped[w.exercise] = [];
-        grouped[w.exercise].push(w);
-      });
-      return Object.keys(grouped).map(ex => {
-        const entries = grouped[ex];
-        const avgWeight = (
-          entries.reduce((a, b) => a + parseInt(b.weight), 0) / entries.length
-        ).toFixed(1);
-        const totalReps = entries.reduce((a, b) => a + parseInt(b.reps), 0);
-        return { exercise: ex, avgWeight, totalReps, workouts: entries.length };
-      });
-    }
-
-    async function renderWeeklySummaryTable(summary) {
-      const tbody = document.getElementById("summaryTableBody");
-      tbody.innerHTML = "";
-      summary.forEach(row => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>${row.exercise}</td>
-          <td>${row.avgWeight}</td>
-          <td>${row.totalReps}</td>
-          <td>${row.workouts}</td>`;
-        tbody.appendChild(tr);
-      });
-    }
-
-    async function populateExerciseFilter() {
-      const allWorkouts = await getWorkoutHistory();
-      const exercises = [...new Set(allWorkouts.map(w => w.exercise))].sort();
-
-      const filterDropdown = document.getElementById("exerciseFilter");
-      filterDropdown.innerHTML = `<option value="">Select Exercise</option>`;
-      exercises.forEach(ex => {
-        const option = document.createElement("option");
-        option.value = ex;
-        option.textContent = ex;
-        filterDropdown.appendChild(option);
-      });
-
-      const toggle = document.getElementById("allTimeToggle");
-      filterDropdown.addEventListener("change", () => renderIfSelected());
-      toggle.addEventListener("change", () => renderIfSelected());
-    }
-
-    function renderIfSelected() {
-      const selected = document.getElementById("exerciseFilter").value;
-      if (selected) renderProgressChart(selected);
-      else if (chartInstance) chartInstance.destroy();
-    }
-
-    async function renderProgressChart(exercise) {
-      const allWorkouts = await getWorkoutHistory();
-      const filtered = allWorkouts.filter(w => w.exercise === exercise);
-
-      const showAllTime = document.getElementById("allTimeToggle").checked;
-      const cutoffDate = new Date();
-      cutoffDate.setDate(cutoffDate.getDate() - 7);
-
-      const limitedData = showAllTime
-        ? filtered
-        : filtered.filter(w => new Date(w.date) >= cutoffDate);
-
-      const grouped = {};
-      limitedData.forEach(entry => {
-        if (!grouped[entry.date]) grouped[entry.date] = [];
-        grouped[entry.date].push(parseInt(entry.weight));
-      });
-
-      const labels = Object.keys(grouped).sort();
-      const avgWeights = labels.map(date => {
-        const weights = grouped[date];
-        return (weights.reduce((a, b) => a + b, 0) / weights.length).toFixed(1);
-      });
-
-      const ctx = document.getElementById("progressChart").getContext("2d");
-      if (chartInstance) chartInstance.destroy();
-
-      chartInstance = new Chart(ctx, {
-        type: "line",
-        data: {
-          labels,
-          datasets: [{
-            label: `${exercise} (${showAllTime ? "All Time" : "Last 7 Days"})`,
-            data: avgWeights,
-            borderColor: showAllTime ? "#2ecc71" : "#8e44ad",
-            backgroundColor: showAllTime
-              ? "rgba(46, 204, 113, 0.2)"
-              : "rgba(155, 89, 182, 0.2)",
-            tension: 0.3,
-            pointRadius: 5,
-            pointHoverRadius: 7,
-            fill: true
-          }]
-        },
-        options: {
-          responsive: true,
-          scales: {
-            y: { beginAtZero: true, title: { display: true, text: "Weight (lbs)" } },
-            x: { title: { display: true, text: "Date" } }
-          },
-          plugins: { legend: { display: false }, tooltip: { mode: "index", intersect: false } }
-        }
-      });
-    }
-
-    async function showWeeklySummary() {
-      const summary = await getLast7DaysSummary();
-      renderWeeklySummaryTable(summary);
-      await populateExerciseFilter();
-      document.getElementById("workoutView").classList.add("hidden");
-      document.getElementById("historyView").classList.add("hidden");
-      document.getElementById("weeklySummaryView").classList.remove("hidden");
-    }
-
-    document.getElementById("viewHistoryBtn").addEventListener("click", showHistory);
-    document.getElementById("weeklySummaryBtn").addEventListener("click", showWeeklySummary);
-
-    window.addEventListener("DOMContentLoaded", async () => {
-      await initDB();
-      populateWorkoutTable();
-      if ("serviceWorker" in navigator) {
-        navigator.serviceWorker.register("service-worker.js");
-      }
+  Object.keys(grouped).sort((a,b)=> b.localeCompare(a)).forEach(date=>{
+    const header = document.createElement('h3'); header.textContent = date; div.appendChild(header);
+    const tbl = document.createElement('table');
+    tbl.innerHTML = '<tr><th>Exercise</th><th>Sets×Reps</th><th>Weight</th><th>Delete</th></tr>';
+    grouped[date].forEach(e=>{
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${e.exercise}</td><td>${e.sets}×${e.reps}</td><td>${e.weight}</td><td><button class="delete-history" data-id="${e.id}">Delete</button></td>`;
+      tbl.appendChild(tr);
     });
-  </script>
+    div.appendChild(tbl);
+  });
+
+  // wire delete buttons
+  div.querySelectorAll('.delete-history').forEach(btn=>{
+    btn.addEventListener('click', async ()=>{
+      const id = Number(btn.dataset.id);
+      const tx = db.transaction('workoutHistory','readwrite');
+      tx.objectStore('workoutHistory').delete(id);
+      tx.oncomplete = async () => {
+        await populateExerciseFilterUI();
+        const sel = document.getElementById('exerciseFilter');
+        const list = sel && sel.value ? await getWorkoutHistoryByExercise(sel.value) : await getWorkoutHistory();
+        renderFilteredHistory(list);
+      };
+    });
+  });
+}
+
+/* ========== Chart code: renders average weight per date for selected exercise ========= */
+let chartInstance = null;
+async function renderProgressChart(exercise){
+  const canvas = document.getElementById('progressChart');
+  if(!canvas) return;
+  if(!exercise || exercise === '') { if(chartInstance){ chartInstance.destroy(); chartInstance=null; } return; }
+
+  const all = await getWorkoutHistoryByExercise(exercise);
+  const showAll = document.getElementById('allTimeToggle') && document.getElementById('allTimeToggle').checked;
+  const cutoff = new Date(); cutoff.setDate(cutoff.getDate()-7);
+  const filtered = showAll ? all : all.filter(x=> new Date(x.date) >= cutoff);
+
+  // group weights by date and compute average
+  const grouped = {};
+  filtered.forEach(r=>{
+    grouped[r.date] = grouped[r.date] || [];
+    grouped[r.date].push(Number(r.weight) || 0);
+  });
+  const labels = Object.keys(grouped).sort();
+  const data = labels.map(d => {
+    const arr = grouped[d];
+    const avg = arr.reduce((a,b)=>a+b,0)/arr.length;
+    return Number(avg.toFixed(1));
+  });
+
+  const ctx = canvas.getContext('2d');
+  if(chartInstance) chartInstance.destroy();
+  chartInstance = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [{
+        label: `${exercise} (${showAll ? 'All Time' : 'Last 7 Days'})`,
+        data,
+        borderColor: '#8e44ad',
+        backgroundColor: 'rgba(142,68,173,0.15)',
+        fill: true,
+        tension: 0.3,
+        pointRadius: 4
+      }]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        y: { beginAtZero: true, title: { display: true, text: 'Weight (lbs)' } },
+        x: { title: { display: true, text: 'Date' } }
+      }
+    }
+  });
+}
+
+/* When All Time toggle changes, recompute chart for selected exercise */
+document.addEventListener('change', (e)=>{
+  if(e.target && e.target.id === 'allTimeToggle'){
+    const ex = document.getElementById('exerciseFilter').value;
+    if(ex) renderProgressChart(ex);
+  }
+});
+
+/* ========== ORIGINAL renderHistory and renderSummary kept intact ========== */
+function renderHistory(){
+  const div=document.getElementById('historyContent'); 
+  div.innerHTML='';
+  const tx=db.transaction('workouts','readonly'); 
+  const store=tx.objectStore('workouts');
+  store.getAll().onsuccess=event=>{
+    const results=event.target.result;
+    if(!results.length){ div.innerHTML='<p>No completed exercises yet.</p>'; return; }
+    const grouped={}; results.forEach(r=>{ if(!grouped[r.date])grouped[r.date]=[]; grouped[r.date].push(r); });
+    
+    for(const date in grouped){
+      const dayGroup=grouped[date];
+      const header=document.createElement('h3'); header.textContent=date; div.appendChild(header);
+
+      const tbl=document.createElement('table'); 
+      tbl.innerHTML='<tr><th>Day</th><th>Exercise</th><th>Sets × Reps</th><th>Weight</th><th>Delete</th></tr>';
+
+      dayGroup.forEach(e=>{
+        const row=document.createElement('tr');
+        row.innerHTML=`
+          <td>${e.day}</td>
+          <td>${e.exercise}</td>
+          <td>${e.sets} × ${e.reps}</td>
+          <td>${e.weight}</td>
+          <td><button class="delete-btn" data-id="${e.id}">Delete</button></td>
+        `;
+        tbl.appendChild(row);
+      });
+      div.appendChild(tbl);
+    }
+
+    div.querySelectorAll('.delete-btn').forEach(btn=>{
+      btn.addEventListener('click',()=>{
+        const id = parseInt(btn.dataset.id);
+        const tx=db.transaction('workouts','readwrite'); 
+        const store=tx.objectStore('workouts'); 
+        store.delete(id);
+        tx.oncomplete = ()=>{ renderHistory(); renderSummary(); };
+      });
+    });
+  };
+}
+
+function renderSummary(){
+  const div=document.getElementById('summaryContent'); div.innerHTML='';
+  const tx=db.transaction('workouts','readonly'); const store=tx.objectStore('workouts');
+  store.getAll().onsuccess=event=>{
+    const results=event.target.result;
+    if(!results.length){ div.innerHTML='<p>No exercises yet.</p>'; return; }
+    const dayTotals={1:0,2:0,3:0};
+    results.forEach(r=>{ if(r.completed) dayTotals[r.day]+=(r.sets*r.reps); });
+    const tbl=document.createElement('table'); tbl.innerHTML='<tr><th>Day</th><th>Total Completed Reps</th></tr>';
+    for(const day in dayTotals) tbl.innerHTML+=`<tr><td>${day}</td><td>${dayTotals[day]}</td></tr>`;
+    div.appendChild(tbl);
+  };
+}
+
+/* ========== Wire checkbox "Done" behavior to saveExercise (and history) ========== */
+document.body.addEventListener('change', e=>{
+  if(e.target && e.target.type==='checkbox' && e.target.dataset.day){
+    const row=e.target.closest('tr');
+    if(e.target.checked){
+      const exercise=row.cells[0].textContent;
+      const sets=parseInt(row.cells[1].textContent);
+      const reps=parseInt(row.cells[2].querySelector('select').value);
+      const weight=parseInt(row.cells[3].querySelector('select').value);
+      const day=parseInt(e.target.dataset.day);
+      saveExercise(day,exercise,sets,reps,weight);
+    }
+  }
+});
+
+/* ========== showPage: ensure history UI and chart get populated when shown ========== */
+async function showPage(pageId){
+  ['mainPage','historyPage','summaryPage'].forEach(id=>document.getElementById(id).className='page hidden');
+  document.getElementById(pageId).className='page visible';
+
+  // Additional actions when showing history or summary
+  if(pageId === 'historyPage'){
+    // Populate filter (in case new entries were added) and render default (all)
+    await populateExerciseFilterUI();
+    const sel = document.getElementById('exerciseFilter');
+    const list = sel && sel.value ? await getWorkoutHistoryByExercise(sel.value) : await getWorkoutHistory();
+    renderFilteredHistory(list);
+    // If a selection exists, render its chart
+    if(sel && sel.value) renderProgressChart(sel.value);
+  } else if(pageId === 'summaryPage'){
+    renderSummary();
+  }
+}
+
+/* ========== Initial population on DOMContentLoaded already handled by request.onsuccess above ========== */
+/* In case code loads before DB ready, we'll also guard-call populateExerciseFilterUI when needed */
+</script>
 </body>
 </html>
