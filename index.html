@@ -101,7 +101,7 @@ const dayExercises = {1:['Seated Chest Press Machine','Seated Row (Cable)','Kett
                       2:['Seated Chest Press Machine','Seated Row (Cable)','Kettlebell Romanian Deadlift','Lat Pulldown','Kettlebell Shoulder Press','Leg Press Machine','Cable Oblique Pulls','Tricep Pushdown / Kettlebell Curl Superset','Back Extension Machine'],
                       3:['Seated Chest Press Machine','Seated Row (Cable)','Kettlebell Romanian Deadlift','Lat Pulldown','Kettlebell Shoulder Press','Leg Press Machine','Cable Oblique Pulls','Tricep Pushdown / Kettlebell Curl Superset','Back Extension Machine']};
 const daySets = {1:3,2:3,3:3};
-const weightOptions = Array.from({length:20},(_,i)=>15+i*5);
+const weightOptions = Array.from({length:20},(_,i)=>15+i*10);
 const repsOptions = Array.from({length:7},(_,i)=>10+i*2);
 
 function createDropdown(options, selected){ return `<select>${options.map(o=>`<option ${o==selected?'selected':''}>${o}</option>`).join('')}</select>`; }
